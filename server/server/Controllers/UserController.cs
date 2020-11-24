@@ -22,14 +22,14 @@ namespace server.Controllers
 
         // GET: api/User
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserObject>>> GetUserObjects()
+        public async Task<ActionResult<IEnumerable<UserObjectDTO>>> GetUserObjects()
         {
-            return await _context.UserObjects.ToListAsync();
+            return await _context.UserObjects.Select(item => ItemToDTO(item)).ToListAsync();
         }
 
         // GET: api/User/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserObject>> GetUserObject(string id)
+        public async Task<ActionResult<UserObjectDTO>> GetUserObject(string id)
         {
             var userObject = await _context.UserObjects.FindAsync(id);
 
@@ -38,28 +38,36 @@ namespace server.Controllers
                 return NotFound();
             }
 
-            return userObject;
+            return ItemToDTO(userObject);
         }
 
         // PUT: api/User/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUserObject(string id, UserObject userObject)
+        public async Task<IActionResult> PutUserObject(string email, UserObjectDTO userObjectDTO)
         {
-            if (id != userObject.Email)
+            if (email != userObjectDTO.Email)
             {
                 return BadRequest();
             }
 
-            _context.Entry(userObject).State = EntityState.Modified;
+            var userObject = await _context.UserObjects.FindAsync(email);
+
+            if(userObject == null)
+            {
+                return BadRequest();
+            }
+
+            userObject.Email = userObjectDTO.Email;
+            userObject.Name = userObjectDTO.Name;
 
             try
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException) when (!UserObjectExists(email))
             {
-                if (!UserObjectExists(id))
+                if (!UserObjectExists(email))
                 {
                     return NotFound();
                 }
@@ -75,7 +83,7 @@ namespace server.Controllers
         // POST: api/User
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<UserObject>> PostUserObject(UserObject userObject)
+        public async Task<ActionResult<UserObjectDTO>> PostUserObject(UserObject userObject)
         {
             _context.UserObjects.Add(userObject);
             try
@@ -94,7 +102,7 @@ namespace server.Controllers
                 }
             }
 
-            return CreatedAtAction("GetUserObject", new { id = userObject.Email }, userObject);
+            return CreatedAtAction("GetUserObject", new { id = userObject.Email }, ItemToDTO(userObject));
         }
 
 
@@ -102,5 +110,12 @@ namespace server.Controllers
         {
             return _context.UserObjects.Any(e => e.Email == id);
         }
+
+        private static UserObjectDTO ItemToDTO(UserObject item) =>
+            new UserObjectDTO
+            {
+                Name = item.Name,
+                Email = item.Email
+            };
     }
 }

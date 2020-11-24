@@ -10,6 +10,7 @@ namespace server.Models
     public class UserObject
     {
         [Key]
+        [Required]
         [Column(TypeName ="nvarchar(100)")]
         public string Email { get; set; }
         [Required]
