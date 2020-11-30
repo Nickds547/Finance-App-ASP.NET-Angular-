@@ -13,6 +13,13 @@ namespace server.Models
 
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<UserObject>()
+                .HasIndex(user => user.Email)
+                .IsUnique();
+        }
+
         public DbSet<UserObject> UserObjects { get; set; }
     }
 }

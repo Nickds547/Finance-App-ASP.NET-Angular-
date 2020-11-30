@@ -154,3 +154,17 @@ C:\Users\Nicholas\Desktop\Finance-App-ASP.NET-Angular-\server\server\bin\Debug\n
 C:\Users\Nicholas\Desktop\Finance-App-ASP.NET-Angular-\server\server\bin\Debug\net5.0\runtimes\win-arm64\native\e_sqlite3.dll
 C:\Users\Nicholas\Desktop\Finance-App-ASP.NET-Angular-\server\server\bin\Debug\net5.0\runtimes\win-x64\native\e_sqlite3.dll
 C:\Users\Nicholas\Desktop\Finance-App-ASP.NET-Angular-\server\server\bin\Debug\net5.0\runtimes\win-x86\native\e_sqlite3.dll
+C:\Users\Nicholas\Desktop\Finance-App-ASP.NET-Angular-\server\server\bin\Debug\net5.0\BCrypt.Net-Next.dll
+C:\Users\Nicholas\Desktop\Finance-App-ASP.NET-Angular-\server\server\bin\Debug\net5.0\FluentValidation.dll
+C:\Users\Nicholas\Desktop\Finance-App-ASP.NET-Angular-\server\server\bin\Debug\net5.0\FluentValidation.AspNetCore.dll
+C:\Users\Nicholas\Desktop\Finance-App-ASP.NET-Angular-\server\server\bin\Debug\net5.0\FluentValidation.DependencyInjectionExtensions.dll
+C:\Users\Nicholas\Desktop\Finance-App-ASP.NET-Angular-\server\server\bin\Debug\net5.0\FluentValidator.dll
+C:\Users\Nicholas\Desktop\Finance-App-ASP.NET-Angular-\server\server\bin\Debug\net5.0\linq2db.dll
+C:\Users\Nicholas\Desktop\Finance-App-ASP.NET-Angular-\server\server\bin\Debug\net5.0\ServiceStack.dll
+C:\Users\Nicholas\Desktop\Finance-App-ASP.NET-Angular-\server\server\bin\Debug\net5.0\ServiceStack.Client.dll
+C:\Users\Nicholas\Desktop\Finance-App-ASP.NET-Angular-\server\server\bin\Debug\net5.0\ServiceStack.Common.dll
+C:\Users\Nicholas\Desktop\Finance-App-ASP.NET-Angular-\server\server\bin\Debug\net5.0\ServiceStack.Interfaces.dll
+C:\Users\Nicholas\Desktop\Finance-App-ASP.NET-Angular-\server\server\bin\Debug\net5.0\ServiceStack.Text.dll
+C:\Users\Nicholas\Desktop\Finance-App-ASP.NET-Angular-\server\server\bin\Debug\net5.0\System.Private.ServiceModel.dll
+C:\Users\Nicholas\Desktop\Finance-App-ASP.NET-Angular-\server\server\bin\Debug\net5.0\System.ServiceModel.Primitives.dll
+C:\Users\Nicholas\Desktop\Finance-App-ASP.NET-Angular-\server\server\bin\Debug\net5.0\System.ServiceModel.dll
