@@ -50,12 +50,12 @@ namespace server.Services
 
         public async Task<UserObject> getUserByEmail(string email)
         {
-            UserObject user =  _context.UserObjects.Where(a => a.Email == email).SingleOrDefault();
+            UserObject user = await _context.UserObjects.Where(a => a.Email == email).SingleOrDefaultAsync();
 
             return user;
         }
 
-        public async Task<bool> UserObjectExists(int id)
+        public bool UserObjectExists(int id)
         {
             return  _context.UserObjects.Any(e => e.Id == id);
         }
@@ -144,7 +144,7 @@ namespace server.Services
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await UserObjectExists(_id))
+                if (!UserObjectExists(_id))
                 {
                     return null;
                 }
