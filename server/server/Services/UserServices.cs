@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using server.Models;
 using System;
@@ -49,7 +50,7 @@ namespace server.Services
 
         public async Task<UserObject> getUserByEmail(string email)
         {
-            UserObject user = _context.UserObjects.Where(a => a.Email == email).SingleOrDefault();
+            UserObject user =  _context.UserObjects.Where(a => a.Email == email).SingleOrDefault();
 
             return user;
         }
@@ -62,7 +63,12 @@ namespace server.Services
 
         public async Task<UserObject> AddUser(UserObject userObject)
         {
+            var userExists = await getUserByEmail(userObject.Email);
 
+            if (userExists != null)
+            {
+                return null;
+            }
 
             userObject.Password = BC.HashPassword(userObject.Password);
 
@@ -71,7 +77,7 @@ namespace server.Services
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException) when (getUserByEmail(userObject.Email) != null)
             {
                 if (await getUserByEmail(userObject.Email) != null)
                 {
@@ -88,9 +94,9 @@ namespace server.Services
 
         public async Task<UserObject> Login(UserObject userObject)
         {
-            var user = await getUserById(userObject.Id);
+            var user = await getUserByEmail(userObject.Email);
 
-            if (user.Email != userObject.Email || user == null)
+            if (user == null || user.Email != userObject.Email)
             {
                 return null;
             }
@@ -102,6 +108,55 @@ namespace server.Services
 
             return user;
         }
+
+
+        public async Task<UserObject> UpdateUser(string id, UserObjectDTO userObjectDTO)
+        {
+            int _id;
+            try //attempting to convert id into an int
+            {
+                _id = int.Parse(id);
+            }
+            catch (Exception e)
+            {
+                return null;
+            };
+
+            if (_id != userObjectDTO.Id) //ensuring the id sent and the id of the userObjectDTO are the same
+            {
+                return null;
+            }
+
+            if (await isAnExistingUser(_id) == false) //ensuring the user exists in the DB
+            {
+                return null;
+            }
+
+            var userObject = await getUserById(_id);
+
+            userObject.Email = userObjectDTO.Email; //changing the userObject from the DB
+            userObject.Name = userObjectDTO.Name;
+
+
+            try //attempting to save changes
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await UserObjectExists(_id))
+                {
+                    return null;
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return userObject;
+        }
+
 
     }
 }

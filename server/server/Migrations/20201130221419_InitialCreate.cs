@@ -14,7 +14,8 @@ namespace server.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Email = table.Column<string>(type: "nvarchar(100)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", nullable: true),
-                    password = table.Column<string>(type: "nvarchar(255)", nullable: false)
+                    Password = table.Column<string>(type: "nvarchar(255)", nullable: false),
+                    Role = table.Column<string>(type: "nvarchar(50)", nullable: false)
                 },
                 constraints: table =>
                 {

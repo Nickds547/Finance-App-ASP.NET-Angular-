@@ -20,6 +20,10 @@ namespace server.JWT
         void RemoveRefreshTokenByUserName(string userName);
         (ClaimsPrincipal, JwtSecurityToken) DecodeJwtToken(string token);
 
+        int GetUserIdFromJwtToken(string token);
+
+        JwtSecurityToken DecodeRequestJwtToken(string token);
+
     }
     public class JwtAuthManager : IJwtAuthManager
     {
@@ -60,7 +64,21 @@ namespace server.JWT
             return (principal, validatedToken as JwtSecurityToken);
         }
 
-        public JwtAuthResult GenerateToken(string username, Claim[] claims, DateTime now)
+        public JwtSecurityToken DecodeRequestJwtToken(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var decodedToken = handler.ReadToken(token) as JwtSecurityToken;
+            return decodedToken;
+        }
+
+        public int GetUserIdFromJwtToken(string token)
+        {
+            var decodedToken = DecodeRequestJwtToken(token);
+            var userId = decodedToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
+            return int.Parse(userId);
+        }
+
+        public JwtAuthResult GenerateToken(string email, Claim[] claims, DateTime now)
         {
             var shouldAddAudienceClaim = string.IsNullOrWhiteSpace(claims?.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Aud)?.Value);
             var jwtToken = new JwtSecurityToken(
@@ -68,16 +86,17 @@ namespace server.JWT
                 shouldAddAudienceClaim ? _jwtTokenConfig.Audience : string.Empty,
                 claims,
                 expires: now.AddMinutes(_jwtTokenConfig.AccessTokenExpiration),
-                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(_secret), SecurityAlgorithms.HmacSha256Signature));
-            )
+                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(_secret), SecurityAlgorithms.HmacSha256Signature)
+            );
             var accessToken = new JwtSecurityTokenHandler().WriteToken(jwtToken);
 
             var refreshToken = new RefreshToken
             {
-                UserName = username,
+                UserName = email,
                 TokenString = GenerateRefreshTokenString(),
                 ExpireAt = now.AddMinutes(_jwtTokenConfig.RefreshTokenExpiration)
             };
+
 
             _usersRefreshTokens.AddOrUpdate(refreshToken.TokenString, refreshToken, (s, t) => refreshToken);
 
@@ -135,7 +154,11 @@ namespace server.JWT
             randomNumberGenerator.GetBytes(randomNumber);
             return Convert.ToBase64String(randomNumber);
         }
+
+
     }
+
+
 
     public class JwtAuthResult
     {

@@ -11,6 +11,7 @@ namespace server.Models
         [Key]
         public long Id { get; set; }
         [Required]
+        [Column(TypeName = "nvarchar(100)")]
         public string Name { get; set; }
         [Required]
         public double Amount { get; set; }
@@ -28,10 +29,12 @@ namespace server.Models
             } 
         }
         [Required]
+        [Column(TypeName = "nvarchar(100)")]
         public string Type { get; set; }
         [Required]
+        [ForeignKey("User")]
         public int UserId { get; set; }
-        public virtual UserObject User { get; set; }
+        public UserObject User { get; set; }
 
     }
 }

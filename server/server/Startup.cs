@@ -33,10 +33,21 @@ namespace server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddControllers();
             //Reading configuration settings and registering JwtTokenConfig as a Singleton in DI
+       
+
+            services.AddSingleton<IJwtAuthManager, JwtAuthManager>();
+
+            services.AddDbContext<UserObjectContext>(option => 
+                option.UseSqlServer(Configuration.GetConnectionString("DbConnection")));
+            services.AddDbContext<TransactionObjectContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DbConnection")));
+
+
             var jwtTokenConfig = Configuration.GetSection("jwtTokenConfig").Get<JwtTokenConfig>();
             services.AddSingleton(jwtTokenConfig);
-
 
             services.AddAuthentication(x =>
             {
@@ -52,21 +63,45 @@ namespace server
                     ValidIssuer = jwtTokenConfig.Issuer,
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtTokenConfig.Secret)),
+                    ValidAudience = jwtTokenConfig.Audience,
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.FromMinutes(1)
                 };
             });
 
-            services.AddDbContext<UserObjectContext>(option => 
-                option.UseSqlServer(Configuration.GetConnectionString("DbConnection")));
-
-
-            services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "server", Version = "v1" });
+
+               /* var securityScheme = new OpenApiSecurityScheme
+                {
+                    Name = "JWT Authentication",
+                    Description = "Enter JWT Bearer token",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer", //must be lowercase,
+                    BearerFormat = "JWT",
+                    Reference =
+                    {
+                        Id = JwtBearerDefaults.AuthenticationScheme,
+                        Type = ReferenceType.SecurityScheme
+                    }
+                };
+
+                c.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {securityScheme, new string []{ } }
+                });*/
             });
+
+            /*services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); });
+            });*/
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -81,10 +116,11 @@ namespace server
 
             app.UseHttpsRedirection();
 
-            app.UseAuthentication();
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
+            
+           
 
             app.UseEndpoints(endpoints =>
             {

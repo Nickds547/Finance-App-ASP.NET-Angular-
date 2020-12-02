@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +11,10 @@ using Microsoft.Extensions.Logging;
 using server.JWT;
 using server.Models;
 using server.Services;
-using BC = BCrypt.Net.BCrypt;
+using System.Text.Json.Serialization;
+using server.Entities;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.Net.Http.Headers;
 
 namespace server.Controllers
 {
@@ -21,15 +25,17 @@ namespace server.Controllers
     {
         private readonly UserObjectContext _context;
         private UserServices _userService;
-        private readonly IJwtAuthManager jwtAuthManager;
+        private readonly IJwtAuthManager _jwtAuthManager;
 
-        public UserController(UserObjectContext context)
+        public UserController(UserObjectContext context, IJwtAuthManager jwtAuthManager)
         {
             _context = context;
             _userService = new UserServices(context);
+            _jwtAuthManager = jwtAuthManager;
         }
 
         // GET: api/User
+        [Authorize(Roles = Roles.Admin)]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserObjectDTO>>> GetUserObjects()
         {
@@ -38,9 +44,26 @@ namespace server.Controllers
 
         // GET: api/User/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<UserObjectDTO>> GetUserObject(string id)
         {
-            var userObject = await _context.UserObjects.FindAsync(id);
+            var userObject = await _userService.getUserById(int.Parse(id));
+
+            //int tokenId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+
+            var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer", "").Replace(" ", "");
+
+            //System.Diagnostics.Debug.WriteLine("Access Token" + accessToken);
+
+            int tokenId = _jwtAuthManager.GetUserIdFromJwtToken(accessToken);
+
+
+            //ensuring the user can only view their own account
+            if (tokenId != userObject.Id)
+            {
+                return BadRequest();
+            }
+
 
             if (userObject == null)
             {
@@ -55,51 +78,26 @@ namespace server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUserObject(string id, UserObjectDTO userObjectDTO)
         {
-            int _id;
-            try //attempting to convert id into an int
-            {
-                _id = int.Parse(id);
-            }
-            catch (Exception e)
-            {
-                return BadRequest();
-            };
-
-            if (_id != userObjectDTO.Id) //ensuring the id sent and the id of the userObjectDTO are the same
-            {
-                return BadRequest();
-            }
-
-            if(await _userService.isAnExistingUser(_id) == false) //ensuring the user exists in the DB
-            {
-                return BadRequest();
-            }
-
-            var userObject = await _userService.getUserById(_id); 
 
             if(await _userService.getUserByEmail(userObjectDTO.Email) != null) //Checking if a user with the new email address already exists
             {
                 return Conflict();
             }
 
-            userObject.Email = userObjectDTO.Email; //changing the userObject from the DB
-            userObject.Name = userObjectDTO.Name;
+            var accessToken = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer", "").Replace(" ", "");
+            int tokenId = _jwtAuthManager.GetUserIdFromJwtToken(accessToken);
 
-
-            try //attempting to save changes
+            //ensuring the user who sent the request is updating their own account
+            if(tokenId != userObjectDTO.Id || tokenId != int.Parse(id))
             {
-                await _context.SaveChangesAsync();
+                return BadRequest();
             }
-            catch (DbUpdateConcurrencyException)
+
+            var user = await _userService.UpdateUser(id, userObjectDTO);
+
+            if (user == null)
             {
-                if (! await _userService.UserObjectExists(_id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest();
             }
 
             return NoContent();
@@ -118,12 +116,28 @@ namespace server.Controllers
                 return BadRequest();
             }
 
-            return ItemToDTO(user);
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Name, user.Id.ToString()),
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role),
+            };
+
+            var jwtResult = _jwtAuthManager.GenerateToken(user.Email, claims, DateTime.Now);
+            
+            return Ok(new LoginResult
+                {
+                    User = ItemToDTO(user),
+                    AccessToken = jwtResult.AccessToken,
+                    //RefreshToken = jwtResult.RefreshToken.TokenString
+                }    
+            );
         }
 
+        [AllowAnonymous]
         [HttpPost]
         public async Task<ActionResult<UserObjectDTO>> PostUserObject(UserObject userObject)
         {
+            userObject.Role = Roles.User;
             var user = await _userService.AddUser(userObject);
 
             if(user == null)
@@ -131,7 +145,21 @@ namespace server.Controllers
                 return Conflict();
             }
 
-            return CreatedAtAction("AddUserObject", new { id = user.Id}, ItemToDTO(userObject));
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Name, user.Id+""),
+                new Claim(ClaimTypes.Role, user.Role)
+            };
+
+            var jwtResult = _jwtAuthManager.GenerateToken(user.Email, claims, DateTime.Now);
+
+            return Ok(new LoginResult
+            {
+                User = ItemToDTO(user),
+                AccessToken = jwtResult.AccessToken,
+                //RefreshToken = jwtResult.RefreshToken.TokenString
+            }
+            );
         }
 
 
@@ -144,5 +172,15 @@ namespace server.Controllers
                 Id = item.Id,
                 Role = item.Role
             };
+
+        public class LoginResult
+        {
+            [JsonPropertyName("user")]
+            public UserObjectDTO User { get; set; }
+            [JsonPropertyName("accessToken")]
+            public string AccessToken { get; set; }
+            [JsonPropertyName("refreshToken")]
+            public string RefreshToken { get; set; }
+        }
     }
 }

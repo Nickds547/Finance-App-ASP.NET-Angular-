@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "l9ZVSs28M4nfUo0yatfW/7CGLjrla+nt3apDDbElNw5NWCyxjLYbP4tm5NnEndpasGdh0VQrmWMooDp6ZKKiQQ==",
+  "dgSpecHash": "yRDefQ1BWsPk52fPWkVh1kXW+Y8q8ONwfhmQgyfQuFRHqtO4VnsRtgiSeYSCL03vsM/Z96LxjbnnGg/UatinVQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\Nicholas\\Desktop\\Finance-App-ASP.NET-Angular-\\server\\server\\server.csproj",
   "expectedPackageFiles": [
@@ -67,6 +67,7 @@
     "C:\\Users\\Nicholas\\.nuget\\packages\\microsoft.extensions.hosting.abstractions\\2.1.1\\microsoft.extensions.hosting.abstractions.2.1.1.nupkg.sha512",
     "C:\\Users\\Nicholas\\.nuget\\packages\\microsoft.extensions.logging\\5.0.0\\microsoft.extensions.logging.5.0.0.nupkg.sha512",
     "C:\\Users\\Nicholas\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\5.0.0\\microsoft.extensions.logging.abstractions.5.0.0.nupkg.sha512",
+    "C:\\Users\\Nicholas\\.nuget\\packages\\microsoft.extensions.logging.debug\\5.0.0\\microsoft.extensions.logging.debug.5.0.0.nupkg.sha512",
     "C:\\Users\\Nicholas\\.nuget\\packages\\microsoft.extensions.objectpool\\2.1.1\\microsoft.extensions.objectpool.2.1.1.nupkg.sha512",
     "C:\\Users\\Nicholas\\.nuget\\packages\\microsoft.extensions.options\\5.0.0\\microsoft.extensions.options.5.0.0.nupkg.sha512",
     "C:\\Users\\Nicholas\\.nuget\\packages\\microsoft.extensions.primitives\\5.0.0\\microsoft.extensions.primitives.5.0.0.nupkg.sha512",
