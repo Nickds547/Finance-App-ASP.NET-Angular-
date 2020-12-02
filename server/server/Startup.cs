@@ -39,6 +39,7 @@ namespace server
        
 
             services.AddSingleton<IJwtAuthManager, JwtAuthManager>();
+           
 
             services.AddDbContext<UserObjectContext>(option => 
                 option.UseSqlServer(Configuration.GetConnectionString("DbConnection")));
