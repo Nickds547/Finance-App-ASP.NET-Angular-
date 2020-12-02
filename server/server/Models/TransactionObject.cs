@@ -32,9 +32,8 @@ namespace server.Models
         [Column(TypeName = "nvarchar(100)")]
         public string Type { get; set; }
         [Required]
-        [ForeignKey("User")]
+        [ForeignKey("UserObject")]
         public int Id { get; set; }
-        public UserObject User { get; set; }
 
     }
 }

@@ -16,27 +16,27 @@ namespace server.Services
         }
 
 
-        public async Task<TransactionObject> getTransactionById(int id)
+        public async Task<TransactionObject> getTransactionById(long id)
         {
             var transaction = await _context.TransactionObjects.FindAsync(id);
 
             return transaction;
         }
 
-        public async Task<bool> TransactionExists(int id)
+        public async Task<IEnumerable<TransactionObject>> GetTransactionsByUserId(int id)
         {
-            var transaction = await _context.TransactionObjects.FindAsync(id);
+            return  await _context.TransactionObjects.Where(x => x.Id == id).ToListAsync();
+        }
 
-            if (transaction == null)
-                return false;
-
-            return true;
+        public async Task<bool> TransactionExists(long id)
+        {
+            return  _context.TransactionObjects.Any(e => e.Id == id);
         }
 
 
         public async Task<TransactionObject> AddTransaction(TransactionObject transaction)
         {
-            var addedTrainsaction =  await _context.AddAsync<TransactionObject>(transaction);
+            var addedTrainsaction =  await _context.AddAsync(transaction);
 
             if (addedTrainsaction == null)
                 return null;
@@ -46,7 +46,7 @@ namespace server.Services
             return transaction;
         }
 
-        public async Task<TransactionObject> UpdateTransaction(int id, TransactionObject transaction)
+        public async Task<TransactionObject> UpdateTransaction(long id, TransactionObject transaction)
         {
             var dbTransaction = await _context.TransactionObjects.FindAsync(id);
 
@@ -78,6 +78,19 @@ namespace server.Services
 
 
             return dbTransaction;
+        }
+
+        public async Task<TransactionObject> DeleteTransaction(long id, int userId)
+        {
+            var transaction = await _context.TransactionObjects.FindAsync(id);
+
+            if (transaction == null || transaction.Id != userId)
+                return null;
+
+            _context.TransactionObjects.Remove(transaction);
+            await _context.SaveChangesAsync();
+
+            return transaction;
         }
     }
 }

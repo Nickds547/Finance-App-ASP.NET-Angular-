@@ -45,47 +45,7 @@ namespace server.Migrations.TransactionObject
 
                     b.HasKey("TransactionId");
 
-                    b.HasIndex("Id");
-
                     b.ToTable("TransactionObjects");
-                });
-
-            modelBuilder.Entity("server.Models.UserObject", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("UserObject");
-                });
-
-            modelBuilder.Entity("server.Models.TransactionObject", b =>
-                {
-                    b.HasOne("server.Models.UserObject", "User")
-                        .WithMany()
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Models;
+using server.Services;
+using server.JWT;
+using Microsoft.Net.Http.Headers;
 
 namespace server.Controllers
 {
@@ -16,28 +19,46 @@ namespace server.Controllers
     public class TransactionController : ControllerBase
     {
         private readonly TransactionObjectContext _context;
+        private TransactionService _transactionService;
+        private readonly IJwtAuthManager _jwtAuthManager;
 
-        public TransactionController(TransactionObjectContext context)
+        public TransactionController(TransactionObjectContext context, IJwtAuthManager jwtAuthManager)
         {
             _context = context;
+            _transactionService = new TransactionService(_context);
+            _jwtAuthManager = jwtAuthManager;
         }
 
         // GET: api/Transaction
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TransactionObject>>> GetTransactionObjects()
         {
-            return await _context.TransactionObjects.ToListAsync();
+            var accessToken = GetAccessToken();
+
+            int userId = _jwtAuthManager.GetUserIdFromJwtToken(accessToken);
+
+            var transactionList = await _transactionService.GetTransactionsByUserId(userId);
+            
+            return Ok(transactionList);
         }
 
         // GET: api/Transaction/5
         [HttpGet("{id}")]
         public async Task<ActionResult<TransactionObject>> GetTransactionObject(long id)
         {
-            var transactionObject = await _context.TransactionObjects.FindAsync(id);
+            var transactionObject = await _transactionService.getTransactionById(id);
 
             if (transactionObject == null)
             {
                 return NotFound();
+            }
+
+            int userId = _jwtAuthManager.GetUserIdFromJwtToken(GetAccessToken());
+
+            //If the user is not requesting their own transaction
+            if (transactionObject.Id != userId)
+            {
+                return BadRequest();
             }
 
             return transactionObject;
@@ -48,28 +69,12 @@ namespace server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTransactionObject(long id, TransactionObject transactionObject)
         {
-            if (id != transactionObject.Id)
-            {
+            int userId = _jwtAuthManager.GetUserIdFromJwtToken(GetAccessToken());
+
+            if (userId != transactionObject.Id)
                 return BadRequest();
-            }
 
-            _context.Entry(transactionObject).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TransactionObjectExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _transactionService.UpdateTransaction(id, transactionObject);
 
             return NoContent();
         }
@@ -79,8 +84,7 @@ namespace server.Controllers
         [HttpPost]
         public async Task<ActionResult<TransactionObject>> PostTransactionObject(TransactionObject transactionObject)
         {
-            _context.TransactionObjects.Add(transactionObject);
-            await _context.SaveChangesAsync();
+            var transaction = await _transactionService.AddTransaction(transactionObject);
 
             return CreatedAtAction("GetTransactionObject", new { id = transactionObject.Id }, transactionObject);
         }
@@ -89,21 +93,21 @@ namespace server.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTransactionObject(long id)
         {
-            var transactionObject = await _context.TransactionObjects.FindAsync(id);
-            if (transactionObject == null)
-            {
-                return NotFound();
-            }
+            int userId = _jwtAuthManager.GetUserIdFromJwtToken(GetAccessToken());
 
-            _context.TransactionObjects.Remove(transactionObject);
-            await _context.SaveChangesAsync();
+            var transaction = await _transactionService.DeleteTransaction(id, userId);
+
+            if (transaction == null)
+                return NotFound();
 
             return NoContent();
         }
 
-        private bool TransactionObjectExists(long id)
+        private string GetAccessToken()
         {
-            return _context.TransactionObjects.Any(e => e.Id == id);
+           return Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer", "").Replace(" ", "");
         }
+
+        
     }
 }
