@@ -9,7 +9,7 @@ namespace server.Models
         private DateTime _createdOn = DateTime.MinValue;
 
         [Key]
-        public long Id { get; set; }
+        public long TransactionId { get; set; }
         [Required]
         [Column(TypeName = "nvarchar(100)")]
         public string Name { get; set; }
@@ -33,7 +33,7 @@ namespace server.Models
         public string Type { get; set; }
         [Required]
         [ForeignKey("User")]
-        public int UserId { get; set; }
+        public int Id { get; set; }
         public UserObject User { get; set; }
 
     }

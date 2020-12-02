@@ -10,8 +10,8 @@ using server.Models;
 namespace server.Migrations.TransactionObject
 {
     [DbContext(typeof(TransactionObjectContext))]
-    [Migration("20201130223905_FourthTrans")]
-    partial class FourthTrans
+    [Migration("20201202030140_InitialTrans")]
+    partial class InitialTrans
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,7 +23,7 @@ namespace server.Migrations.TransactionObject
 
             modelBuilder.Entity("server.Models.TransactionObject", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("TransactionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .UseIdentityColumn();
@@ -34,6 +34,9 @@ namespace server.Migrations.TransactionObject
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(100)");
@@ -42,12 +45,9 @@ namespace server.Migrations.TransactionObject
                         .IsRequired()
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.HasKey("TransactionId");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
+                    b.HasIndex("Id");
 
                     b.ToTable("TransactionObjects");
                 });
@@ -83,7 +83,7 @@ namespace server.Migrations.TransactionObject
                 {
                     b.HasOne("server.Models.UserObject", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

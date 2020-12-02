@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace server.Migrations.TransactionObject
 {
-    public partial class InitialTransaction : Migration
+    public partial class InitialTrans : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -27,29 +27,29 @@ namespace server.Migrations.TransactionObject
                 name: "TransactionObjects",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    TransactionId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", nullable: false),
                     Amount = table.Column<double>(type: "float", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    Type = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TransactionObjects", x => x.Id);
+                    table.PrimaryKey("PK_TransactionObjects", x => x.TransactionId);
                     table.ForeignKey(
-                        name: "FK_TransactionObjects_UserObject_UserId",
-                        column: x => x.UserId,
+                        name: "FK_TransactionObjects_UserObject_Id",
+                        column: x => x.Id,
                         principalTable: "UserObject",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_TransactionObjects_UserId",
+                name: "IX_TransactionObjects_Id",
                 table: "TransactionObjects",
-                column: "UserId");
+                column: "Id");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

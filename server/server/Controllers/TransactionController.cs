@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,23 +12,24 @@ namespace server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TransactionObjectsController : ControllerBase
+    [Authorize]
+    public class TransactionController : ControllerBase
     {
         private readonly TransactionObjectContext _context;
 
-        public TransactionObjectsController(TransactionObjectContext context)
+        public TransactionController(TransactionObjectContext context)
         {
             _context = context;
         }
 
-        // GET: api/TransactionObjects
+        // GET: api/Transaction
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TransactionObject>>> GetTransactionObjects()
         {
             return await _context.TransactionObjects.ToListAsync();
         }
 
-        // GET: api/TransactionObjects/5
+        // GET: api/Transaction/5
         [HttpGet("{id}")]
         public async Task<ActionResult<TransactionObject>> GetTransactionObject(long id)
         {
@@ -41,7 +43,7 @@ namespace server.Controllers
             return transactionObject;
         }
 
-        // PUT: api/TransactionObjects/5
+        // PUT: api/Transaction/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTransactionObject(long id, TransactionObject transactionObject)
@@ -72,7 +74,7 @@ namespace server.Controllers
             return NoContent();
         }
 
-        // POST: api/TransactionObjects
+        // POST: api/Transaction
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<TransactionObject>> PostTransactionObject(TransactionObject transactionObject)
@@ -83,7 +85,7 @@ namespace server.Controllers
             return CreatedAtAction("GetTransactionObject", new { id = transactionObject.Id }, transactionObject);
         }
 
-        // DELETE: api/TransactionObjects/5
+        // DELETE: api/Transaction/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTransactionObject(long id)
         {

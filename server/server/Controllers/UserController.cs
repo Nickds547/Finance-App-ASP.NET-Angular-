@@ -78,6 +78,10 @@ namespace server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUserObject(string id, UserObjectDTO userObjectDTO)
         {
+            if(int.Parse(id) != userObjectDTO.Id)
+            {
+                return BadRequest();
+            }
 
             if(await _userService.getUserByEmail(userObjectDTO.Email) != null) //Checking if a user with the new email address already exists
             {
