@@ -15,8 +15,11 @@ export class JwtTokenInterceptor implements HttpInterceptor{
                 const cloned = req.clone({
                     headers: req.headers.set("Authorization", "Bearer " + jwtToken)
                 })
+                console.log('In interceptor: ', cloned);
+                return next.handle(cloned);
             }
             else{
+                console.log('Did not add jwt');
                 return next.handle(req);
             }
         }

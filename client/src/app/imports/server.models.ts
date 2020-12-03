@@ -17,13 +17,14 @@ export class Transaction {
     Amount: number;
     Name: string;
     Date: Date;
-    UserId: number; //Users Id
+    Id: number; //Users Id
+    Type: string;
 
     constructor(name:string, amount: number, date: Date, userId: number){
         this.Name = name;
         this.Amount = amount;
         this.Date = date;
-        this.UserId =  userId;
+        this.Id =  userId;
     }
 }
 

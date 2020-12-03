@@ -1,0 +1,63 @@
+<div class="container mt-5">
+
+    <div class="col-lg-8 col-lg-offset-6 col-centered">
+        <div class="card">
+            <div>
+                <button class="btn btn-link" (click)="changePage('Add')">Add Transaction</button>|
+                <button class="btn btn-link" (click)="changePage('View')">View Transaction</button>
+            </div>
+            <div class="card-body center" *ngIf="page == 'Add'">
+                <div class="card-title">
+                  <h4>Add Transaction</h4>
+                </div>
+                <div class="row-lg mt-1" *ngFor="let transaction of m.controls; let i = index">
+                    <!-- <h4 >Transaction {{i+1}}</h4> -->
+                    <form [formGroup]="transaction" class='w-100 input-group' (ngSubmit)="addItem(i)">
+                        <div class="form-group">
+                            <div class="row">
+                                <input class="form-control mt-2" type="text" formControlName="name" placeholder="Transaction Name"/>
+                                <input class="form-control mt-2"  type='number' formControlName="amount" placeholder="Amount"/>
+                            </div>
+                            <div class="row">
+                                <input class="form-control mt-2"  type="date" formControlName="date" placeholder="Date of transaction (Leave blank if today)"/>
+                                <input class="form-control mt-2" type="text" formControlName="type" placeholder="Type of Transaction (I.E Food, Bills)"/>
+                            </div>
+                            <div class=" row text-danger" *ngIf="transaction.invalid">Please fill all required fields</div>
+                            <div class="row mt-2">
+                                <button type="submit" class="btn btn btn-success">Submit</button>
+                                <!-- <button class="btn btn-sm btn-danger ml-2" (click)="deleteItem(i)">Delete</button> -->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- <button class="btn btn-primary mt-3" (click)="addField()">Add Another Transaction</button> -->
+            
+                <!-- <div class="row" *ngFor="let item of addedItems">
+                    <div class="alert alert-success" *ngIf="item.success; else fail"> Item added successfully</div>
+                    <ng-template #fail>
+                        <div class="alert alert-danger" #fail>{{item.message}}</div>
+                    </ng-template>
+                </div> -->
+
+                <div *ngIf="notification != null && notification != undefined">
+
+                      <div *ngIf="notification.isValid" class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{notification.message}}
+                        <button (click)="clearNotification()" type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+
+                      <div *ngIf="!notification.isValid"  class="alert alert-warning alert-dismissible fade show" role="alert" >
+                        {{notification.message}}
+                        <button (click)="clearNotification()" type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                </div>
+            </div>
+
+            <app-view-transactions *ngIf="page == 'View'" ></app-view-transactions>
+        </div>
+    </div>
+</div>
