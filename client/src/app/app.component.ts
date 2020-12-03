@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 
+import {LoadingService} from './services/loading.service'
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -7,4 +8,6 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'client';
+
+  constructor(public loadingService: LoadingService){}
 }

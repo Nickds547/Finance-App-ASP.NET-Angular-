@@ -1,0 +1,29 @@
+<form [formGroup]="registerForm" (ngSubmit)="registerUser()" >
+    <div class="form-group">
+        <label><h5>Name:</h5> </label> 
+        <input  type="text" required name="name" class="form-control" placeholder="John Doe" formControlName="name" />
+        <div id="input-info" class="text-danger" *ngIf="email.invalid">
+            Name is required
+        </div>
+
+        <label class="pt-4"><h5>Email:</h5> </label> 
+        <input  type="text" required name="email" class="form-control" placeholder="example@example.com" formControlName="email" />
+        <div id="input-info" class="text-danger" *ngIf="email.invalid">
+            Must enter valid email address
+        </div>
+
+        <label class="pt-4"><h5>Password:</h5> </label> 
+        <input  type="password" required name="password" class="form-control" formControlName="password" placeholder="********"/>
+        <div id="input-info" class="text-danger" *ngIf="password.invalid">
+            Password is required
+        </div>
+
+        <label class="pt-4"><h5>Confirm Password:</h5> </label> 
+        <input  type="password" required name="password" class="form-control" formControlName="confirmPass" placeholder="********"/>
+        <div id="input-info" class="text-danger" *ngIf="confirmPass.invalid">
+            Passwords must match
+        </div>
+
+    </div>
+    <button class="btn btn-primary" [disabled]="registerForm.invalid" type="submit">Register!</button>
+</form>

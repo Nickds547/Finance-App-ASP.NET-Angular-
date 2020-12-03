@@ -1,25 +1,27 @@
-<div class="container pt-5">
+<div class="container pt-1 mb-5 pb-5">
     <div class="row">
         <div class="col-lg-6 col-lg-offset-6 col-centered">
             <div class="card center" >
                 <div class="card-body">
-                  <h3 class="card-title" style="text-align:center">Login </h3>
-                  <form [formGroup]="loginForm" (ngSubmit)="login()">
+                  <h3 class="card-title" style="text-align:center">{{register ? 'Register' : 'Login'}}</h3>
+                  <form [formGroup]="loginForm" (ngSubmit)="login()" *ngIf="!register; else registerForm">
                     <div class="form-group">
-                      <label>Email: </label>
+                      <label><h5>Email:</h5> </label>
                       <input  type="text" required name="email" class="form-control" placeholder="example@example.com" formControlName="email" />
-                      <div class="text-danger" *ngIf="email.invalid">
+                      <div id="input-info" class="text-danger" *ngIf="email.invalid">
                         Must enter valid email address
                       </div>
-                      <label class="pt-5">Password: </label>
+                      <label class="pt-4"><h5>Password:</h5> </label>
                       <input  type="password" required name="password" class="form-control" formControlName="password" placeholder="********"/>
-                      <div class="text-danger" *ngIf="password.invalid">
+                      <div id="input-info" class="text-danger" *ngIf="password.invalid">
                         Password is Required
                       </div>
                     </div>
-                    <button class="btn btn-primary" [disabled]="loginForm.invalid" type="submit">Submit</button>
+                    <button class="btn btn-primary" [disabled]="loginForm.invalid" type="submit">Log In</button>
                   </form>
-                  <footer class="d-flex flex-row-reverse"><button class="btn btn-link"> Register Here</button></footer>
+                  <footer class="d-flex flex-row-reverse">
+                    <button class="btn btn-link" (click)="switchRegister()">{{register ?  'Go to Login': 'Register Here'}}</button>
+                  </footer>
 
                   <div *ngFor="let message of messages">
                     <div *ngIf="message.isValid == false">
@@ -40,6 +42,9 @@
                     </div>
                   </div>
 
+                  <ng-template #registerForm>
+                    <app-register></app-register>
+                  </ng-template>
 
                 </div>
               </div>

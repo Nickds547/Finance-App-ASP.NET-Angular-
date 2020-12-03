@@ -55,31 +55,15 @@ export class LoginComponent implements OnInit {
       },
       err =>{
         console.log("error: ", err.error,);
+        console.log(typeof(err.error));
+        console.log(typeof(err.error) != typeof(String))
+        
+        if(typeof(err.error) != typeof(String))
+          err.error = "An unexpected error occurred, please try again later"
+
         this.messages.push(new errorObject(this.messages.length,false,err.error));
       }
       )
-  }
-
-  private authenticateUser(data: any){
-    var isAuthenticated = this.jwtService.authenticateUser(data.accessToken);
-
-    if(isAuthenticated)
-    {
-      let userData = data.user;
-      let user = new User(userData.name)
-
-      user.Email = userData.email;
-      user.Id =  parseInt(userData.id);
-      user.Name = userData.name;
-      user.Role = userData.role;
-
-      this.authService.setUser(user);
-      this.router.navigate(['']);
-    }
-    else{
-      this.messages.push(new errorObject(this.messages.length,false,"Error: Please try again"));
-    }
-    
   }
 
   removeErrorObject(id: number){
@@ -106,5 +90,9 @@ export class LoginComponent implements OnInit {
       }
     }
     return email;
+  }
+
+  switchRegister(){
+    this.register = !this.register;
   }
 }

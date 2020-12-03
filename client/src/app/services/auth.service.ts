@@ -25,6 +25,14 @@ export class AuthService {
 
   }
 
+  createUser = (user: User): Observable<any> =>{
+
+    user.Role = "user";
+    let body = JSON.stringify(user);
+
+    return this.http.post(LINK + "User", body, {'headers': HEADERS})
+  }
+
   setUser = (user: User) =>{
     localStorage.setItem(USER_STORAGE, JSON.stringify(user));
   }
@@ -33,5 +41,7 @@ export class AuthService {
     localStorage.removeItem(USER_STORAGE);
     localStorage.removeItem(TOKEN_NAME);
   }
+
+
 
 }
