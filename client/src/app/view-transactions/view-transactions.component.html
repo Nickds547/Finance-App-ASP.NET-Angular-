@@ -1,1 +1,82 @@
-<p>view-transactions works!</p>
+<div class="card-body center" *ngIf="transactions.length != 0; else noData">
+    <div>
+        <table class="table table-responsive-lg table-hover">
+            <caption class="text-black">Click row to edit or delete an entry</caption>
+            <thead>
+              <tr>
+                <th scope="col">Transaction Name</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Type</th>
+                <th scope="col">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor= "let transaction of transactions" data-toggle="modal" data-target="#editTransactionModal" (click)="showTransactionModal(transaction)">
+                <th >{{transaction.Name}}</th>
+                <td>${{transaction.Amount}}</td>
+                <td>{{transaction.Type}}</td>
+                <td>{{transaction.getFormattedDate()}}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div *ngIf="notifications.length != 0">
+              <div *ngFor ="let notification of notifications">
+                <div *ngIf="notification.isValid" class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{notification.message}}
+                    <button (click)="removeNotification(notification.id)" class="close" type="button"  aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+
+                  <div *ngIf="!notification.isValid" class="alert alert-warning alert-dismissible fade show" role="alert">
+                    {{notification.message}}
+                    <button (click)="removeNotification(notification.id)" class="close" type="button"  aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+              </div>
+          </div>
+    </div>
+</div>
+
+<ng-template #noData>
+    <div class="card-body center">
+        <h4>No data yet, please <a href="transaction">add a transaction</a></h4>
+    </div>
+</ng-template>
+
+
+<!-- Modal -->
+<div class="modal fade" id="editTransactionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" *ngIf="editTransaction != null">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">{{editTransaction.Name}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="editForm">
+            <div class="form-group">
+                <label>Name:</label>
+                <input class="form-control" type="text" name="name" formControlName="name"/>
+                <label>Amount:</label>
+                <input class="form-control" type="number" name="amount" formControlName="amount"/>
+                <label>Type:</label>
+                <input class="form-control" type="text" name="type" formControlName="type"/>
+                <label>Date:</label>
+                <input [value]="dateFilter()" class="form-control" type="date" name="date" formControlName="date"/>
+                Current Date: {{dateFilter()}}
+            </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" data-dismiss="modal" (click)="deleteTransaction()" class="btn btn-danger">Delete Transaction</button>
+        <button type="button" data-dismiss="modal" (click)="updateTransaction()" class="btn btn-primary">Update Transaction</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

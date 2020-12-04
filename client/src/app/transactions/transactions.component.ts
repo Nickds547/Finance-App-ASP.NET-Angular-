@@ -55,7 +55,8 @@ export class TransactionsComponent implements OnInit {
     else{
       if(!form.date)
         form.date = Date.now();
-
+      else
+        form.date = new Date(form.date)
       let transaction = new Transaction(form.name,form.amount,form.date,this.user.Id)
       transaction.Type = form.type;
       this.transactionService.addTransaction(transaction).subscribe(

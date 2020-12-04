@@ -19,12 +19,18 @@ export class Transaction {
     Date: Date;
     Id: number; //Users Id
     Type: string;
+    DateString: string; //M/D/Y
 
     constructor(name:string, amount: number, date: Date, userId: number){
         this.Name = name;
         this.Amount = amount;
         this.Date = date;
         this.Id =  userId;
+        this.DateString = this.Date.getMonth() + '/' + (this.Date.getDay()-1) + '/' + this.Date.getFullYear(); //-1 because days were being incremented by 1
+    }
+
+    getFormattedDate(){
+        return this.Date.toDateString();
     }
 }
 

@@ -18,4 +18,21 @@ export class TransactionService {
 
     return this.http.post(LINK + "Transaction",body,{'headers' : HEADERS})
   }
+
+  getTransactions = (): Observable<any> =>{
+    return this.http.get(LINK + 'Transaction', {headers: HEADERS})
+  }
+
+  deleteTransactions = (transaction: Transaction): Observable<any> => {
+
+    let deleteLink = LINK + 'Transaction/' + transaction.TransactionId;
+
+    return this.http.delete(deleteLink);
+  }
+
+  updateTransaction = (transaction: Transaction):Observable<any> =>{
+    let body = JSON.stringify(transaction);
+
+    return this.http.put(LINK + 'Transaction/' + transaction.TransactionId, body, {'headers' : HEADERS})
+  }
 }
