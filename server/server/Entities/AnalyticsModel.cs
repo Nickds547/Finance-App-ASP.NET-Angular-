@@ -10,6 +10,7 @@ namespace server.Entities
         public int TransactionCount { get; set; }
         public string MostCommonTransactionType { get; set; }
         public AmountOfTypePurchased[] PurchasedTypes{ get; set; }
+
     }
     public class AmountOfTypePurchased
     {

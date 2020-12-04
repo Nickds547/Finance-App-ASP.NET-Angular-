@@ -11,14 +11,22 @@ namespace server.Services
     {
         public Analytics GetAllAnalytics(List<TransactionObject> userTransactions)
         {
+
             var analytics = new Analytics();
 
-            analytics.TransactionCount = GetTransactionCount(userTransactions);
+            int transactionCount = GetTransactionCount(userTransactions);
+            analytics.TransactionCount = transactionCount;
+
+            //breaking from service to prevent other analytics being calculated
+            if (transactionCount == 0)
+                return analytics;
 
             Analytics mostCommonAndTypesPurchased = GetMostCommonAndTypesPurchased(userTransactions);
 
             analytics.PurchasedTypes = mostCommonAndTypesPurchased.PurchasedTypes;
             analytics.MostCommonTransactionType = mostCommonAndTypesPurchased.MostCommonTransactionType;
+            
+          
 
             return analytics;
         }
@@ -31,7 +39,7 @@ namespace server.Services
             }
             else
             {
-                return userTransactions.Count();
+                return userTransactions.Count;
             }
         }
 
@@ -41,8 +49,8 @@ namespace server.Services
             var map = new Dictionary<string, AmountOfTypePurchased>();
             HashSet<string> typesAdded = new HashSet<string>();
 
-            string mostPurchasedType = null;
-            int mostPurchasedValue = 0;
+            string mostPurchasedType = null; //variables to find most purchased type while already iterating transactions
+            int mostPurchasedTypeValue = 0;
 
             foreach (TransactionObject transaction in userTransactions)
             {
@@ -54,9 +62,14 @@ namespace server.Services
                     amountOfTypePurchased.AmountPurchased = amountOfTypePurchased.AmountPurchased + 1;
                     map[type] = amountOfTypePurchased;
 
-                    if (amountOfTypePurchased.AmountPurchased > mostPurchasedValue)
+                    if (amountOfTypePurchased.AmountPurchased > mostPurchasedTypeValue)
                     {
-
+                        mostPurchasedType = amountOfTypePurchased.Type;
+                        mostPurchasedTypeValue = amountOfTypePurchased.AmountPurchased;
+                    }
+                    else if (amountOfTypePurchased.AmountPurchased == mostPurchasedTypeValue)
+                    {
+                        mostPurchasedType = mostPurchasedType + ',' + amountOfTypePurchased.Type;
                     }
                 }
                 else
@@ -64,9 +77,9 @@ namespace server.Services
                     typesAdded.Add(type);
                     map.Add(type, new AmountOfTypePurchased(type, 1));
 
-                    if (mostPurchasedValue == 0)
+                    if (mostPurchasedTypeValue == 0)
                     {
-                        mostPurchasedValue = 1;
+                        mostPurchasedTypeValue = 1;
                         mostPurchasedType = type;
                     }
                 }
@@ -74,12 +87,12 @@ namespace server.Services
 
             analytics.MostCommonTransactionType = mostPurchasedType;
 
+            analytics.PurchasedTypes = new AmountOfTypePurchased[map.Count];
 
-            int count = 0;
-            foreach (KeyValuePair<string, AmountOfTypePurchased> entry in map)
+            for(int i = 0; i < map.Count; i++)
             {
-                analytics.PurchasedTypes[count] = entry.Value;
-                count++;
+                var item = map.ElementAt(i);
+                analytics.PurchasedTypes[i] = item.Value;
             }
 
             return analytics;

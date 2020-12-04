@@ -10,6 +10,8 @@ using server.Models;
 using server.Services;
 using server.JWT;
 using Microsoft.Net.Http.Headers;
+using System.Text.Json.Serialization;
+using server.Entities;
 
 namespace server.Controllers
 {
@@ -40,6 +42,26 @@ namespace server.Controllers
             var transactionList = await _transactionService.GetTransactionsByUserId(userId);
             
             return Ok(transactionList);
+        }
+
+        // GET: api/analystics
+        [HttpGet("analytics/{id}")]
+        public async Task<ActionResult<AnalyticsResult>> GetUserTransactionAnalytics(string id)
+        {
+
+            int userId = _jwtAuthManager.GetUserIdFromJwtToken(GetAccessToken());
+
+            if (userId != int.Parse(id))
+                return BadRequest("Error validating user");
+
+            var analytics = await _transactionService.GetAllUserTransactionAnalytics(userId);
+
+            return Ok(new AnalyticsResult 
+            { 
+                TransactionCount = analytics.TransactionCount,
+                MostCommonTransactionType = analytics.MostCommonTransactionType,
+                PurchasedTypes = analytics.PurchasedTypes
+            });
         }
 
         // GET: api/Transaction/5
@@ -112,6 +134,15 @@ namespace server.Controllers
            return Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer", "").Replace(" ", "");
         }
 
-        
+        public class AnalyticsResult
+        {
+            [JsonPropertyName("transactionCount")]
+            public int TransactionCount { get; set; }
+            [JsonPropertyName("mostCommonTransactionType")]
+            public string MostCommonTransactionType { get; set; }
+            [JsonPropertyName("purchasedTypes")]
+            public AmountOfTypePurchased[] PurchasedTypes { get; set; }
+        }
+
     }
 }
