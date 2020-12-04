@@ -4,13 +4,14 @@ import { Observable } from 'rxjs';
 
 import {Transaction} from '../imports/server.models';
 import {LINK,HEADERS} from '../imports/server.config';
+import {AuthService} from '../services/auth.service'
 
 @Injectable({
   providedIn: 'root'
 })
 export class TransactionService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private authService: AuthService) { }
 
 
   addTransaction = (transaction: Transaction): Observable<any> =>{
@@ -34,5 +35,11 @@ export class TransactionService {
     let body = JSON.stringify(transaction);
 
     return this.http.put(LINK + 'Transaction/' + transaction.TransactionId, body, {'headers' : HEADERS})
+  }
+
+  getTransactionAnalytics = (): Observable<any> =>{
+    let user = this.authService.getUser();
+
+    return this.http.get(LINK + 'Transaction/analytics/' + user.Id)
   }
 }

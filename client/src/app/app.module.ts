@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http'
 import { ReactiveFormsModule } from '@angular/forms'
+import { MDBBootstrapModule, ChartsModule } from 'angular-bootstrap-md';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -27,7 +28,9 @@ import {JwtTokenInterceptor} from './interceptors/jwtToken.interceptor'
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    MDBBootstrapModule.forRoot(),
+    ChartsModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtTokenInterceptor, multi: true}

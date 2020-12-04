@@ -39,3 +39,19 @@ export class JwtToken{
     exp: Date;
     iss: string;
 }
+
+export class Analytics{
+    MostCommonTransactionType: string;
+    PurchasedTypes: Array<TypesPurchased> = [];
+    TransactionCount: number;
+}
+
+export class TypesPurchased{
+    Type: string;
+    AmountPurchased: number;
+
+    constructor(Type: string, AmountPurchased: number){
+        this.Type =Type;
+        this.AmountPurchased = AmountPurchased;
+    }
+}
