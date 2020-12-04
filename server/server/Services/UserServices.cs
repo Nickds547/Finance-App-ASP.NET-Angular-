@@ -92,21 +92,21 @@ namespace server.Services
             return userObject;
         }
 
-        public async Task<UserObject> Login(UserObject userObject)
+        public async Task<(UserObject, string)> Login(UserObject userObject)
         {
             var user = await getUserByEmail(userObject.Email);
 
-            if (user == null || user.Email != userObject.Email)
+            if (user == null)
             {
-                return null;
+                return (null, "User Not Found");
             }
 
             if (userObject == null || !BC.Verify(userObject.Password, user.Password))
             {
-                return null;
+                return (null, "Invalid Credentials"); ;
             }
 
-            return user;
+            return (user, "Login Successful");
         }
 
 

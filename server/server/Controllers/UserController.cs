@@ -113,11 +113,13 @@ namespace server.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserObjectDTO>> LoginUserObject(UserObject userObject)
         {
-            var user = await _userService.Login(userObject);
+            var serviceReturn = await _userService.Login(userObject);
+            var user = serviceReturn.Item1;
+            var message = serviceReturn.Item2;
 
             if(user == null)
             {
-                return BadRequest();
+                return BadRequest(message);
             }
 
             var claims = new[]
@@ -132,7 +134,7 @@ namespace server.Controllers
                 {
                     User = ItemToDTO(user),
                     AccessToken = jwtResult.AccessToken,
-                    //RefreshToken = jwtResult.RefreshToken.TokenString
+                    RefreshToken = jwtResult.RefreshToken.TokenString
                 }    
             );
         }

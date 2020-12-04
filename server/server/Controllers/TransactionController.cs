@@ -69,12 +69,16 @@ namespace server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTransactionObject(long id, TransactionObject transactionObject)
         {
+
             int userId = _jwtAuthManager.GetUserIdFromJwtToken(GetAccessToken());
 
             if (userId != transactionObject.Id)
-                return BadRequest();
+                return BadRequest("User does not have access to this Transaction");
 
-            await _transactionService.UpdateTransaction(id, transactionObject);
+            var serviceReturn = await _transactionService.UpdateTransaction(id, transactionObject);
+
+            if (serviceReturn.Item1 == null)
+                return BadRequest(serviceReturn.Item2);
 
             return NoContent();
         }
