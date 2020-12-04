@@ -42,16 +42,30 @@ export class JwtToken{
 
 export class Analytics{
     MostCommonTransactionType: string;
-    PurchasedTypes: Array<TypesPurchased> = [];
+    Demographics: Array<SpendingDemographics> = [];
     TransactionCount: number;
+    BiggestTransactionByAmount: BiggestTransaction;
 }
 
-export class TypesPurchased{
+export class SpendingDemographics{
     Type: string;
-    AmountPurchased: number;
+    NumberOfTransaction: number;
+    MoneySpent: number;
 
-    constructor(Type: string, AmountPurchased: number){
+    constructor(Type: string, NumberOfTransaction: number, MoneySpent: number){
         this.Type =Type;
-        this.AmountPurchased = AmountPurchased;
+        this.NumberOfTransaction = NumberOfTransaction;
+        this.MoneySpent = MoneySpent;
+    }
+}
+
+
+export class BiggestTransaction{
+    Type: string;
+    AmountSpent: number;
+
+    constructor(Type: string, AmountSpent: number){
+        this.Type = Type;
+        this.AmountSpent = AmountSpent;
     }
 }

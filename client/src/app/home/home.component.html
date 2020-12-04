@@ -2,7 +2,19 @@
     <div class="card mt-5  pb-5">
         <div class="card-body" *ngIf="analytics.TransactionCount > 0; else noTransactions">
             <h3 class="card-title ">Spending Analytics</h3>
-            
+            <div class="col-lg-4 col-lg-offset-6 col-centered pt-3 mb-5">
+                <form [formGroup]="form" (ngSubmit)="changeSelection()">
+                    <div class="input-group mb-3">
+                        <select formControlName="selection"  class="form-control">
+                            <option value="spending">Spending</option>
+                            <option value="transactions">Transactions</option>
+                        </select>
+                    </div>
+                    <div class="input-group-btn d-flex justify-content-center">
+                        <button type="submit" class="btn btn-primary">Update Chart</button>
+                    </div>
+                </form>
+            </div>
             <canvas mdbChart id="pieChart" *ngIf="chartData.length != 0"
             [chartType]="chartType"
             [data]="chartData" 
@@ -12,22 +24,26 @@
             [legend]="true"
             >
             </canvas>
-            <div class="col-lg-6 col-lg-offset-6 col-centered pt-3">
-                <h5>Your spent the most money on {{analytics.MostCommonTransactionType}}, hopefully knowing 
-                    this can help you meet your budgeting goals!</h5>
+            <div style="text-align: center;"  class="col-lg-6 col-lg-offset-6 col-centered pt-3">
+                <h5 *ngIf="chartSelection =='transactions'">Your most common transaction type is {{analytics.MostCommonTransactionType}}!</h5>
+                <h5 *ngIf="chartSelection == 'spending'">
+                    Your biggest transaction was ${{analytics.BiggestTransactionByAmount.AmountSpent}} for {{analytics.BiggestTransactionByAmount.Type}}
+                </h5>
             </div>
-            <div class="col-lg-6 col-lg-offset-6 col-centered">
+            <div class="col col-sm-6 col-lg-offset-6 col-centered">
                 <table class="table table-striped mt-5">
                     <thead>
                         <tr>
                             <th scope="col">Type</th>
                             <th scope="col"># of Transactions</th>
+                            <th scope="col">Amount Spent</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let purchasedType of analytics.PurchasedTypes">
-                            <th style="text-transform: capitalize;">{{purchasedType.Type}}</th>
-                            <td>{{purchasedType.AmountPurchased}}</td>
+                        <tr *ngFor="let demographic of analytics.Demographics">
+                            <th style="text-transform: capitalize;">{{demographic.Type}}</th>
+                            <td>{{demographic.NumberOfTransaction}}</td>
+                            <td>${{demographic.MoneySpent}}</td>
                         </tr>
                     </tbody>
                 </table>

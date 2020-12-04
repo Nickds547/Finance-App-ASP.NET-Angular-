@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import * as Chart from 'chart.js';
 
 import {TransactionService} from '../services/transaction.service'
-import {Analytics,TypesPurchased} from '../imports/server.models'
+import {Analytics,SpendingDemographics,BiggestTransaction} from '../imports/server.models'
+import { FormControl, FormGroup } from '@angular/forms';
 
 
 @Component({
@@ -15,7 +16,12 @@ export class HomeComponent implements OnInit {
   ctx: any;
 
   analytics: Analytics;
-  typesPurchased: Map<string, TypesPurchased>;
+  spendingDemographics: Array<SpendingDemographics> = [];
+  chartSelection: string = "spending";
+
+  form = new FormGroup({
+    selection: new FormControl('spending')
+  })
 
   chartData: Array<number> = [];
   chartLabels: Array<string> = [];
@@ -30,7 +36,7 @@ export class HomeComponent implements OnInit {
   constructor(private transactionService: TransactionService) 
   { 
     this.analytics = new Analytics();
-    this.typesPurchased = new Map();
+    this.spendingDemographics;
   }
 
   ngOnInit(): void {
@@ -39,7 +45,7 @@ export class HomeComponent implements OnInit {
     
     ngAfterViewInit(){
       this.canvas = document.getElementById('pieChart');
-      //this.ctx = this.canvas.getContext('2d');
+      this.ctx = this.canvas.getContext('2d');
       const pieChart = new Chart(this.ctx, {
         type: 'pie',
         data: {
@@ -61,10 +67,13 @@ export class HomeComponent implements OnInit {
   getAnalytics(){
     this.transactionService.getTransactionAnalytics().subscribe(
       data =>{
+        console.log('Data', data)
         this.analytics.MostCommonTransactionType = data.mostCommonTransactionType;
+        this.analytics.BiggestTransactionByAmount = new BiggestTransaction(data.biggestTransaction.type,data.biggestTransaction.amountSpent);
         this.analytics.TransactionCount = data.transactionCount;
-        this.setChartData(data.purchasedTypes)
-        this.setTypesPurchased(data.purchasedTypes);
+        console.log("BiggestTrans", this.analytics.BiggestTransactionByAmount.Type)
+        this.setSpendingDemographics(data.spendingDemographics);
+        this.setChartData(this.spendingDemographics);
       },
       err =>{
         console.log(err)
@@ -72,24 +81,60 @@ export class HomeComponent implements OnInit {
     )
   }
 
-  setTypesPurchased(data: Array<any>){
+  setSpendingDemographics(data: Array<any>){
     for(var i = 0; i < data.length; i++){
-      let typesPurchased = new TypesPurchased(data[i].type, data[i].amountPurchased)
-      this.typesPurchased.set(data[i].type, typesPurchased);
-      this.analytics.PurchasedTypes.push(typesPurchased);
-      
+      let demographic = new SpendingDemographics(data[i].type, data[i].numberOfTransactions, data[i].moneySpent)
+      this.spendingDemographics.push(demographic);
+      this.analytics.Demographics.push(demographic);
     }
   }
 
-  setChartData(data: Array<any>){
-    for(var i = 0; i < data.length; i++){
+  setChartData(data: Array<SpendingDemographics>){
+    
+    this.resetChart();
 
-      let value = data[i].amountPurchased;
-      this.chartData.push(value)
-      this.chartLabels.push(data[i].type)
+    if(this.chartSelection === "spending")
+    {
+      this.setSpendingData(data);
+    } else if(this.chartSelection === "transactions"){
+      this.setTransactionData(data);
+    }
+    else {
+      console.log('err');
     }
 
-    console.log(this.analytics.PurchasedTypes)
+    console.log('chartData: ', this.chartData);
+    
+  }
+
+  setSpendingData(data: Array<SpendingDemographics>){
+    for(var i = 0; i < data.length; i++){
+
+      let value = data[i].MoneySpent;
+      this.chartData.push(value)
+      this.chartLabels.push(data[i].Type)
+    }
+  }
+
+  setTransactionData(data: Array<SpendingDemographics>){
+    for(var i = 0; i < data.length; i++){
+
+      let value = data[i].NumberOfTransaction;
+      this.chartData.push(value)
+      this.chartLabels.push(data[i].Type)
+    }
+  }
+
+  changeSelection(){
+    this.chartSelection = this.form.value.selection;
+    console.log("chartSlection: ", this.chartSelection);
+    this.setChartData(this.spendingDemographics);
+
+  }
+
+  resetChart(){
+    this.chartData = [];
+    this.chartLabels = [];
   }
 
 }
