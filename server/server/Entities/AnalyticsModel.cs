@@ -9,18 +9,34 @@ namespace server.Entities
     {
         public int TransactionCount { get; set; }
         public string MostCommonTransactionType { get; set; }
-        public AmountOfTypePurchased[] PurchasedTypes{ get; set; }
+        public SpendingDemographics[] Demographics{ get; set; }
+        public BiggestTransaction BiggestTransactionByAmount { get; set; }
 
     }
-    public class AmountOfTypePurchased
+    public class SpendingDemographics
     {
-        public AmountOfTypePurchased(string Type, int AmountPurchased)
+        public string Type { get; set; }
+        public double MoneySpent { get; set; }
+        public int NumberOfTransactions { get; set; }
+
+        public SpendingDemographics(string Type, double MoneySpent, int NumberOfTransactions)
         {
             this.Type = Type;
-            this.AmountPurchased = AmountPurchased;
+            this.MoneySpent = MoneySpent;
+            this.NumberOfTransactions = NumberOfTransactions;
         }
-        public string Type { get; set; }
-        public int AmountPurchased { get; set; }
+
     }
+
+    public class BiggestTransaction{
+        public string Type { get; set; }
+        public double AmountSpent { get; set; }
+
+        public BiggestTransaction(string Type, double AmountSpent)
+        {
+            this.Type = Type;
+            this.AmountSpent = AmountSpent;
+        }
+}
 
 }

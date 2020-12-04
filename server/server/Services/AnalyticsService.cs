@@ -9,7 +9,7 @@ namespace server.Services
 {
     public class AnalyticsService
     {
-        public Analytics GetAllAnalytics(List<TransactionObject> userTransactions)
+        public Analytics GetBaseAnalytics(List<TransactionObject> userTransactions)
         {
 
             var analytics = new Analytics();
@@ -21,12 +21,14 @@ namespace server.Services
             if (transactionCount == 0)
                 return analytics;
 
-            Analytics mostCommonAndTypesPurchased = GetMostCommonAndTypesPurchased(userTransactions);
+            Analytics mostCommonAndDemographics = GetMostCommonAndDemographics(userTransactions);
 
-            analytics.PurchasedTypes = mostCommonAndTypesPurchased.PurchasedTypes;
-            analytics.MostCommonTransactionType = mostCommonAndTypesPurchased.MostCommonTransactionType;
-            
-          
+            analytics.Demographics = mostCommonAndDemographics.Demographics;
+            analytics.MostCommonTransactionType = mostCommonAndDemographics.MostCommonTransactionType;
+            analytics.BiggestTransactionByAmount = mostCommonAndDemographics.BiggestTransactionByAmount;
+
+
+
 
             return analytics;
         }
@@ -43,59 +45,90 @@ namespace server.Services
             }
         }
 
-        public Analytics GetMostCommonAndTypesPurchased(List<TransactionObject> userTransactions)
+        public Analytics GetMostCommonAndDemographics(List<TransactionObject> userTransactions)
         {
             var analytics = new Analytics();
-            var map = new Dictionary<string, AmountOfTypePurchased>();
+            var map = new Dictionary<string, SpendingDemographics>();
             HashSet<string> typesAdded = new HashSet<string>();
 
             string mostPurchasedType = null; //variables to find most purchased type while already iterating transactions
-            int mostPurchasedTypeValue = 0;
+            int highestTransactionCount = 0;
+            double currentMostAmountSpent = 0;
+            string typeWithHighestTransactionAmount = null;
 
             foreach (TransactionObject transaction in userTransactions)
             {
                 string type = transaction.Type.ToLower();
 
+                //if type has been used before, increment relevant spending demographics and check against highestTransactionCount
                 if (typesAdded.Contains(type))
                 {
-                    AmountOfTypePurchased amountOfTypePurchased = map[type];
-                    amountOfTypePurchased.AmountPurchased = amountOfTypePurchased.AmountPurchased + 1;
-                    map[type] = amountOfTypePurchased;
+                    SpendingDemographics spendingDemographics = map[type];
+                    spendingDemographics.NumberOfTransactions = spendingDemographics.NumberOfTransactions + 1;
+                    spendingDemographics.MoneySpent = spendingDemographics.MoneySpent + transaction.Amount;
+                    map[type] = spendingDemographics;
 
-                    if (amountOfTypePurchased.AmountPurchased > mostPurchasedTypeValue)
+                    if (spendingDemographics.NumberOfTransactions > highestTransactionCount)
                     {
-                        mostPurchasedType = amountOfTypePurchased.Type;
-                        mostPurchasedTypeValue = amountOfTypePurchased.AmountPurchased;
+                        mostPurchasedType = type;
+                        highestTransactionCount = spendingDemographics.NumberOfTransactions;
                     }
-                    else if (amountOfTypePurchased.AmountPurchased == mostPurchasedTypeValue)
+                    else if (spendingDemographics.NumberOfTransactions == highestTransactionCount)
                     {
-                        mostPurchasedType = mostPurchasedType + ',' + amountOfTypePurchased.Type;
+                        mostPurchasedType = mostPurchasedType + ',' + spendingDemographics.Type;
                     }
+
                 }
-                else
+                else //if trpe has not been used before, create a new SpendingDemographics object and store it in the map
                 {
                     typesAdded.Add(type);
-                    map.Add(type, new AmountOfTypePurchased(type, 1));
+                    map.Add(type, new SpendingDemographics(type, transaction.Amount, 1));
 
-                    if (mostPurchasedTypeValue == 0)
+                    if (highestTransactionCount == 0)
                     {
-                        mostPurchasedTypeValue = 1;
+                        highestTransactionCount = 1;
                         mostPurchasedType = type;
                     }
+                }
+
+                if (transaction.Amount > currentMostAmountSpent)
+                {
+                    currentMostAmountSpent = transaction.Amount;
+                    typeWithHighestTransactionAmount = type;
+                       
                 }
             }
 
             analytics.MostCommonTransactionType = mostPurchasedType;
+            BiggestTransaction biggestTransaction = new BiggestTransaction(typeWithHighestTransactionAmount, currentMostAmountSpent);
+            analytics.BiggestTransactionByAmount = biggestTransaction;
 
-            analytics.PurchasedTypes = new AmountOfTypePurchased[map.Count];
+            analytics.Demographics = new SpendingDemographics[map.Count];
 
             for(int i = 0; i < map.Count; i++)
             {
                 var item = map.ElementAt(i);
-                analytics.PurchasedTypes[i] = item.Value;
+                analytics.Demographics[i] = item.Value;
             }
 
             return analytics;
+        }
+
+        private (double, string) CheckAmountSpent(double currentMostAmountSpent, double transactionAmount,string typeWithHighestTransactionAmount, string transactionType)
+        {
+            if(transactionAmount > currentMostAmountSpent)
+            {
+                return (transactionAmount, transactionType);
+            }
+            else if(transactionAmount == currentMostAmountSpent && typeWithHighestTransactionAmount != transactionType)
+            {
+                return (currentMostAmountSpent, typeWithHighestTransactionAmount);
+            }
+            else
+            {
+                return (currentMostAmountSpent, typeWithHighestTransactionAmount);
+            }
+
         }
     }
 }

@@ -60,7 +60,8 @@ namespace server.Controllers
             { 
                 TransactionCount = analytics.TransactionCount,
                 MostCommonTransactionType = analytics.MostCommonTransactionType,
-                PurchasedTypes = analytics.PurchasedTypes
+                Demographics = analytics.Demographics,
+                BiggestTransactionByAmount = analytics.BiggestTransactionByAmount
             });
         }
 
@@ -140,8 +141,11 @@ namespace server.Controllers
             public int TransactionCount { get; set; }
             [JsonPropertyName("mostCommonTransactionType")]
             public string MostCommonTransactionType { get; set; }
-            [JsonPropertyName("purchasedTypes")]
-            public AmountOfTypePurchased[] PurchasedTypes { get; set; }
+            [JsonPropertyName("spendingDemographics")]
+            public SpendingDemographics[] Demographics { get; set; }
+
+            [JsonPropertyName("biggestTransaction")]
+            public BiggestTransaction BiggestTransactionByAmount { get; set; }
         }
 
     }

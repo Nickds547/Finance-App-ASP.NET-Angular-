@@ -104,7 +104,7 @@ namespace server.Services
         public async Task<Analytics> GetAllUserTransactionAnalytics(int userId)
         {
             List<TransactionObject> userTransactions = (List<TransactionObject>)await GetTransactionsByUserId(userId);
-            Analytics analytics = _analyticsService.GetAllAnalytics(userTransactions);
+            Analytics analytics = _analyticsService.GetBaseAnalytics(userTransactions);
 
             return analytics;
         }
