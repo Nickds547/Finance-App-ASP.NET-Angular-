@@ -1,2 +1,2 @@
-export const LINK = "https://localhost:44347/api/";
+export const LINK = "http://spending-tracker-api.azurewebsites.net/api/";
 export const HEADERS = { 'content-type': 'application/json'}  
