@@ -12,16 +12,20 @@
                 </div>
                 <div class="row-lg mt-1" *ngFor="let transaction of m.controls; let i = index">
                     <!-- <h4 >Transaction {{i+1}}</h4> -->
-                    <form [formGroup]="transaction" class='w-100 input-group' (ngSubmit)="addItem(i)">
+                    <form [formGroup]="transaction" (ngSubmit)="addItem(i)">
                         <div class="form-group">
-                            <div class="row">
-                                <input class="form-control mt-2" type="text" formControlName="name" placeholder="Transaction Name"/>
-                                <input class="form-control mt-2"  type='number' min=".01" formControlName="amount" placeholder="Amount"/>
-                            </div>
-                            <div class="row">
-                                <input class="form-control mt-2"  type="date" formControlName="date" placeholder="Date of transaction (Leave blank if today)"/>
-                                <input class="form-control mt-2" type="text" formControlName="type" placeholder="Type of Transaction (I.E Food, Bills)"/>
-                            </div>
+                                <label class="pt-2">Transaction Name: </label>
+                                <input class="form-control" type="text" formControlName="name" placeholder="Walmart"/>
+
+                                <label class="pt-2" >Amount: </label>
+                                <input class="form-control"  type='number' min=".01" formControlName="amount" placeholder="147.59"/>
+                            
+                                <label class="pt-2" >Date: </label>
+                                <input class="form-control"  type="date" formControlName="date"/>
+
+                                <label class="pt-2" >Amount: </label>
+                                <input class="form-control" type="text" formControlName="type" placeholder=" Food, Bills, etc."/>
+
                             <div class=" row text-danger" *ngIf="transaction.invalid">Please fill all required fields</div>
                             <div class="row mt-2">
                                 <button type="submit" class="btn btn btn-success">Submit</button>
