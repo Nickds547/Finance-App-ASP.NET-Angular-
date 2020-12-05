@@ -42,7 +42,7 @@
 
 <ng-template #noData>
     <div class="card-body center">
-        <h4>No data yet, please <a href="transaction">add a transaction</a></h4>
+        <h4>No data yet, please add a transaction</h4>
     </div>
 </ng-template>
 
@@ -63,7 +63,7 @@
                 <label>Name:</label>
                 <input class="form-control" type="text" name="name" formControlName="name"/>
                 <label>Amount:</label>
-                <input class="form-control" type="number" name="amount" formControlName="amount"/>
+                <input class="form-control" type="number" min=".01" name="amount" formControlName="amount"/>
                 <label>Type:</label>
                 <input class="form-control" type="text" name="type" formControlName="type"/>
                 <label>Date:</label>

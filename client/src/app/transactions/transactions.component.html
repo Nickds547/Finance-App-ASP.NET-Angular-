@@ -15,8 +15,8 @@
                     <form [formGroup]="transaction" class='w-100 input-group' (ngSubmit)="addItem(i)">
                         <div class="form-group">
                             <div class="row">
-                                <input class="form-control mt-2" type="text" formControlName="name" placeholder="Transaction Type"/>
-                                <input class="form-control mt-2"  type='number' formControlName="amount" placeholder="Amount"/>
+                                <input class="form-control mt-2" type="text" formControlName="name" placeholder="Transaction Name"/>
+                                <input class="form-control mt-2"  type='number' min=".01" formControlName="amount" placeholder="Amount"/>
                             </div>
                             <div class="row">
                                 <input class="form-control mt-2"  type="date" formControlName="date" placeholder="Date of transaction (Leave blank if today)"/>
@@ -30,14 +30,6 @@
                         </div>
                     </form>
                 </div>
-                <!-- <button class="btn btn-primary mt-3" (click)="addField()">Add Another Transaction</button> -->
-            
-                <!-- <div class="row" *ngFor="let item of addedItems">
-                    <div class="alert alert-success" *ngIf="item.success; else fail"> Item added successfully</div>
-                    <ng-template #fail>
-                        <div class="alert alert-danger" #fail>{{item.message}}</div>
-                    </ng-template>
-                </div> -->
 
                 <div *ngIf="notification != null && notification != undefined">
 

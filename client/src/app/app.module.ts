@@ -12,7 +12,8 @@ import { RegisterComponent } from './register/register.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { TransactionsComponent } from './transactions/transactions.component';
 import { ViewTransactionsComponent } from './view-transactions/view-transactions.component';
-import {JwtTokenInterceptor} from './interceptors/jwtToken.interceptor'
+import {JwtTokenInterceptor} from './interceptors/jwtToken.interceptor';
+import { NoDataComponent } from './errors/no-data/no-data.component'
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import {JwtTokenInterceptor} from './interceptors/jwtToken.interceptor'
     RegisterComponent,
     NavbarComponent,
     TransactionsComponent,
-    ViewTransactionsComponent
+    ViewTransactionsComponent,
+    NoDataComponent
   ],
   imports: [
     BrowserModule,

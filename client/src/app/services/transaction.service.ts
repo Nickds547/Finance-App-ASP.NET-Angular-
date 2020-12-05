@@ -16,6 +16,7 @@ export class TransactionService {
 
   addTransaction = (transaction: Transaction): Observable<any> =>{
     let body = JSON.stringify(transaction);
+    console.log(body);
 
     return this.http.post(LINK + "Transaction",body,{'headers' : HEADERS})
   }

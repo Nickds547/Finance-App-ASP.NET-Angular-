@@ -4,7 +4,7 @@ import {Transaction, User} from '../imports/server.models'
 import {AuthService} from '../services/auth.service'
 import {TransactionService} from '../services/transaction.service'
 import {errorObject} from '../imports/app.models'
-
+import {inParams} from '../imports/validations'
 
 @Component({
   selector: 'app-transactions',
@@ -38,11 +38,12 @@ export class TransactionsComponent implements OnInit {
   addField = () =>{
     this.m.push(this.formBuilder.group({
       name: ['', Validators.required],
-      amount: ['', Validators.required, !isNaN],
-      date: ['',],
+      amount: ['', Validators.required, !isNaN, inParams],
+      date: ['',Validators.required],
       type: ['', Validators.required]
     }));
   }
+  
 
   addItem = (index) =>{
 
@@ -73,6 +74,7 @@ export class TransactionsComponent implements OnInit {
     }
 
   }
+
 
   deleteItem = (index) =>{
     this.m.removeAt(index);
