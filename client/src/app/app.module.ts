@@ -13,7 +13,8 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { TransactionsComponent } from './transactions/transactions.component';
 import { ViewTransactionsComponent } from './view-transactions/view-transactions.component';
 import {JwtTokenInterceptor} from './interceptors/jwtToken.interceptor';
-import { NoDataComponent } from './errors/no-data/no-data.component'
+import { NoDataComponent } from './errors/no-data/no-data.component';
+import { PageNotFoundComponent } from './errors/page-not-found/page-not-found.component'
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { NoDataComponent } from './errors/no-data/no-data.component'
     NavbarComponent,
     TransactionsComponent,
     ViewTransactionsComponent,
-    NoDataComponent
+    NoDataComponent,
+    PageNotFoundComponent
   ],
   imports: [
     BrowserModule,

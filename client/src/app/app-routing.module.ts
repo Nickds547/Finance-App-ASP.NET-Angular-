@@ -8,6 +8,8 @@ const routes: Routes = [
   {path: "" ,component: Components.HomeComponent, canActivate: [AuthGuard]},
   {path:"transaction", component: Components.TransactionsComponent, canActivate: [AuthGuard]},
   {path: "login", component: Components.LoginComponent},
+  {path:"notFound", component: Components.PageNotFoundComponent},
+  {path: '**',  redirectTo: 'notFound'}
  
 
 ];
